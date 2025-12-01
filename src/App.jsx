@@ -58,20 +58,49 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [timeLeft, gameActive]);
 
-  const getBackgroundColor = (wpm) => {
-    if (wpm < 30) return `hsl(0, 70%, 85%)`; 
-    if (wpm > 90) return `hsl(120, 70%, 85%)`; 
-    const step = ((wpm - 30) / 60) * 120; 
-    return `hsl(${step}, 70%, 85%)`;
+  const bgColors = {
+    "<30": "#ff4d4d", 
+    30: "#ff6666",
+    35: "#ff7f66",
+    40: "#ff9966",
+    45: "#ffb366",
+    50: "#ffcc66",
+    55: "#ffe066",
+    60: "#ffff66",
+    65: "#e6ff66",
+    70: "#ccff66",
+    75: "#b3ff66",
+    80: "#99ff66",
+    85: "#80ff66",
+    90: "#66ff66",
+    ">90": "#33ff33", 
   };
 
-  const speedLegend = [];
-  speedLegend.push({ color: "hsl(0, 70%, 85%)", label: "<30 WPM" });
-  for (let wpm = 30; wpm <= 90; wpm += 5) {
-    const hue = ((wpm - 30) / 60) * 120; 
-    speedLegend.push({ color: `hsl(${hue}, 70%, 85%)`, label: `${wpm} WPM` });
-  }
-  speedLegend.push({ color: "hsl(120, 70%, 85%)", label: ">90 WPM" });
+  const getBackgroundColor = (wpm) => {
+    if (wpm < 30) return bgColors["<30"];
+    if (wpm > 90) return bgColors[">90"];
+
+    const step = Math.floor(wpm / 5) * 5;
+    return bgColors[step] || "#ffffff"; 
+  };
+
+  const speedLegend = [
+    { color: bgColors["<30"], label: "<30 WPM" },
+    { color: bgColors[30], label: "30 WPM" },
+    { color: bgColors[35], label: "35 WPM" },
+    { color: bgColors[40], label: "40 WPM" },
+    { color: bgColors[45], label: "45 WPM" },
+    { color: bgColors[50], label: "50 WPM" },
+    { color: bgColors[55], label: "55 WPM" },
+    { color: bgColors[60], label: "60 WPM" },
+    { color: bgColors[65], label: "65 WPM" },
+    { color: bgColors[70], label: "70 WPM" },
+    { color: bgColors[75], label: "75 WPM" },
+    { color: bgColors[80], label: "80 WPM" },
+    { color: bgColors[85], label: "85 WPM" },
+    { color: bgColors[90], label: "90 WPM" },
+    { color: bgColors[">90"], label: ">90 WPM" },
+  ];
 
   return (
     <div
@@ -120,9 +149,16 @@ export default function App() {
         className="w-full max-w-4xl p-3 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      <div className="mt-4 text-lg">
+      <div className="flex flex-col space-y-2 items-center">
         <p>Speed: {typingSpeed.toFixed(0)} WPM</p>
         <p>Time Left: {timeLeft} sec</p>
+
+        <button
+          onClick={startGame}
+          className="px-2 m-2 bg-white border border-black rounded"
+        >
+          Restart
+        </button>
       </div>
     </div>
   );
