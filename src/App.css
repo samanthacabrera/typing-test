@@ -8,3 +8,14 @@ html {
   margin: 0;
   font-family: Helvetica, sans-serif;
 }
+
+.cursor {
+  background-color: white;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    background-color: transparent;
+  }
+}

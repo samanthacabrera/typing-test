@@ -9,7 +9,7 @@ export default function App() {
   const [typingSpeed, setTypingSpeed] = useState(0); 
   const [finalSpeed, setFinalSpeed] = useState(0);
   const [finalAccuracy, setFinalAccuracy] = useState(100);
-  const [gameActive, setGameActive] = useState(false);
+  const [testActive, setTestActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   let usedSentences = new Set();
@@ -28,14 +28,14 @@ export default function App() {
     return selected.join(" ");
   };
 
-  const startGame = async () => {
+  const startTest = async () => {
     const newText = await generateParagraph();
     setText(newText);
     setUserInput("");
     setStartTime(Date.now());
     setTypingSpeed(0);
     setTimeLeft(60);
-    setGameActive(true);
+    setTestActive(true);
     setShowModal(false);
   };
 
@@ -51,18 +51,18 @@ export default function App() {
 
   // Updates WPM and extends text as user types
   useEffect(() => {
-    if (!gameActive) return;
+    if (!testActive) return;
     const elapsedMinutes = (Date.now() - startTime) / 1000 / 60;
     const wpm = userInput.length / 5 / elapsedMinutes;
     setTypingSpeed(wpm);
     if (userInput.length >= text.length - 1) {
     generateParagraph().then(newFacts => setText(prev => prev + " " + newFacts));
     }
-  }, [userInput, gameActive, startTime, text]);
+  }, [userInput, testActive, startTime, text]);
 
   // Countdown timer logic
   useEffect(() => {
-    if (!gameActive) return;
+    if (!testActive) return;
     if (timeLeft <= 0) {
       setFinalSpeed(typingSpeed);
         const finalAcc =
@@ -75,7 +75,7 @@ export default function App() {
                   100
             );
       setFinalAccuracy(finalAcc);
-      setGameActive(false);
+      setTestActive(false);
       setShowModal(true);
       setText("");      
       setUserInput("");
@@ -83,11 +83,11 @@ export default function App() {
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, gameActive]);
+  }, [timeLeft, testActive]);
 
   // Global key listener for typing input
   useEffect(() => {
-    if (!gameActive || timeLeft <= 0) return;
+    if (!testActive || timeLeft <= 0) return;
 
     const handleKey = (e) => {
       e.preventDefault();
@@ -103,7 +103,7 @@ export default function App() {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [gameActive, timeLeft]);
+  }, [testActive, timeLeft]);
 
   // WPM to bg color mapping
   const bgColors = {
@@ -159,7 +159,7 @@ export default function App() {
         </div>
       </header>
 
-      {!gameActive && (
+      {!testActive && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <p className="opacity-30">
             Press [ Start ] to begin
@@ -171,12 +171,18 @@ export default function App() {
         <div className="max-w-4xl p-4 text-center">
           <p className="text-lg leading-relaxed">
             {text.split("").map((char, idx) => {
-              let color = "#000"; 
-              if (idx < userInput.length) {
-                color = userInput[idx] === char ? "green" : "red";
-              }
+              const isTyped = idx < userInput.length;
+              const isCurrent = idx === userInput.length; 
+
+              let color = "#000";
+              if (isTyped) color = userInput[idx] === char ? "green" : "red";
+
               return (
-                <span key={idx} style={{ color }}>
+                <span
+                  key={idx}
+                  style={{ color }}
+                  className={isCurrent ? "cursor" : ""}
+                >
                   {char}
                 </span>
               );
@@ -188,7 +194,7 @@ export default function App() {
       <div className="fixed bottom-0 w-full flex justify-center">
         <div className="flex items-center space-x-4 p-1 w-full bg-white/30 text-sm">
           <button
-            onClick={startGame}
+            onClick={startTest}
             className="hover:scale-110 transition"
           >
             [ Start ]
