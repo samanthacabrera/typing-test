@@ -51,17 +51,6 @@ export default function App() {
             userInput.length) *
             100
       );
-  
-  const resetStats = () => {
-    setText("");
-    setUserInput("");
-    setStartTime(null);
-    setTimeLeft(60);
-    setTypingSpeed(0);
-    setFinalSpeed(0);
-    setFinalAccuracy(100);
-    setCurrentChapter("");
-  };
 
   // Updates WPM and extends text as user types
   useEffect(() => {
@@ -91,6 +80,8 @@ export default function App() {
       setFinalAccuracy(finalAcc);
       setTestActive(false);
       setShowModal(true);
+      setText("");      
+      setUserInput("");
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -171,7 +162,7 @@ export default function App() {
       {currentChapter && (
         <div  className="flex flex-col items-center mt-4 text-sm">
           <p>
-            Excerpt from Wuthering Heights by Emily Bronte
+            Excerpt from Wuthering Heights by <span className="tracking-wide">E</span>mily Brontë
           </p>
           <p>Chapter: {currentChapter}</p>
         </div>
@@ -244,10 +235,13 @@ export default function App() {
 
       {showModal && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center"
           onClick={() => {
             setShowModal(false);
-            resetStats(); 
+            setText("");
+            setUserInput("");
+            setCurrentChapter("");
+            setTypingSpeed(0);
           }}
         >
           <div
