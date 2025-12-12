@@ -49,6 +49,16 @@ export default function App() {
             userInput.length) *
             100
       );
+  
+  const resetStats = () => {
+    setText("");
+    setUserInput("");
+    setStartTime(null);
+    setTimeLeft(60);
+    setTypingSpeed(0);
+    setFinalSpeed(0);
+    setFinalAccuracy(100);
+  };
 
   // Updates WPM and extends text as user types
   useEffect(() => {
@@ -78,8 +88,7 @@ export default function App() {
       setFinalAccuracy(finalAcc);
       setTestActive(false);
       setShowModal(true);
-      setText("");      
-      setUserInput("");
+      resetStats();
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
