@@ -12,6 +12,7 @@ export default function App() {
   const [testActive, setTestActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [bgPalette, setBgPalette] = useState("blue");
+  const [currentChapter, setCurrentChapter] = useState("");
 
   let usedSentences = new Set();
 
@@ -26,12 +27,13 @@ export default function App() {
     }
     const selected = newSentences.slice(0, 10);
     selected.forEach(s => usedSentences.add(s));
-    return selected.join(" ");
+      return { text: selected.join(" "), chapter };
   };
 
   const startTest = async () => {
-    const newText = await generateParagraph();
-    setText(newText);
+    const { text: newText, chapter } = await generateParagraph(); 
+    setText(newText);        
+    setCurrentChapter(chapter);
     setUserInput("");
     setStartTime(Date.now());
     setTypingSpeed(0);
@@ -58,6 +60,7 @@ export default function App() {
     setTypingSpeed(0);
     setFinalSpeed(0);
     setFinalAccuracy(100);
+    setCurrentChapter("");
   };
 
   // Updates WPM and extends text as user types
@@ -88,7 +91,6 @@ export default function App() {
       setFinalAccuracy(finalAcc);
       setTestActive(false);
       setShowModal(true);
-      resetStats();
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -166,6 +168,15 @@ export default function App() {
         </div>
       </header>
 
+      {currentChapter && (
+        <div  className="flex flex-col items-center mt-4 text-sm">
+          <p>
+            Excerpt from Wuthering Heights by Emily Bronte
+          </p>
+          <p>Chapter: {currentChapter}</p>
+        </div>
+      )}
+
       {!testActive && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <p className="text-lg text-white">
@@ -234,7 +245,10 @@ export default function App() {
       {showModal && (
         <div
           className="fixed inset-0 bg-black/40 flex items-center justify-center"
-          onClick={() => setShowModal(false)} 
+          onClick={() => {
+            setShowModal(false);
+            resetStats(); 
+          }}
         >
           <div
             className="bg-white p-8 rounded-lg text-center"
